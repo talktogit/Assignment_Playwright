@@ -13,6 +13,10 @@ class ShopPage extends BasePage {
     await this.page.goto('https://practice.automationtesting.in/shop/');
   }
 
+  async isUnavailable() {
+    return this.page.getByText('There has been a critical error on this website.').isVisible();
+  }
+
   async searchProduct(productName) {
     await this.searchInput.fill(productName);
     await this.searchButton.click();

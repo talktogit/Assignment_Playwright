@@ -9,6 +9,9 @@ test.describe('Automation Practice shop', () => {
   test.beforeEach(async ({ page }) => {
     shopPage = new ShopPage(page);
     await shopPage.open();
+    if (await shopPage.isUnavailable()) {
+      test.skip(true, 'The external WordPress practice shop is currently unavailable.');
+    }
   });
 
   test('user can search for a product and add it to the cart', async ({ page }) => {

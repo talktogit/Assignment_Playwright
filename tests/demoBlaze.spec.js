@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { DemoblazePage } = require('../pages/DemoblazePage');
+const { DemoblazePage } = require('../pages/DemoBlazePage');
 
 const productName = 'Samsung galaxy s6';
 const testUser = {

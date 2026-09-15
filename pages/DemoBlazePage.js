@@ -1,11 +1,10 @@
 const { BasePage } = require('./BasePage');
 
-class DemoBlazePage extends BasePage {
+class DemoblazePage extends BasePage {
   constructor(page) {
     super(page);
     this.productCards = page.locator('#tbodyid .card');
     this.cartLink = page.locator('#cartur');
-    this.cartRows = page.locator('#tbodyid tr.success');
     this.placeOrderButton = page.getByRole('button', { name: 'Place Order' });
     this.nameInput = page.locator('#name');
     this.countryInput = page.locator('#country');
@@ -14,7 +13,15 @@ class DemoBlazePage extends BasePage {
     this.monthInput = page.locator('#month');
     this.yearInput = page.locator('#year');
     this.purchaseButton = page.getByRole('button', { name: 'Purchase' });
-    this.successMessage = page.locator('.sweet-alert h2');
+    this.signupLink = page.locator('#signin2');
+    this.signupUsernameInput = page.locator('#sign-username');
+    this.signupPasswordInput = page.locator('#sign-password');
+    this.signupButton = page.getByRole('button', { name: 'Sign up' });
+    this.loginLink = page.locator('#login2');
+    this.loginUsernameInput = page.locator('#loginusername');
+    this.loginPasswordInput = page.locator('#loginpassword');
+    this.loginButton = page.getByRole('button', { name: 'Log in' });
+    this.welcomeUser = page.locator('#nameofuser');
   }
 
   async open() {
@@ -25,26 +32,42 @@ class DemoBlazePage extends BasePage {
     return this.productCards.filter({ hasText: productName });
   }
 
-  async addProduct(productName) {
-    await this.product(productName).locator('a').click();
-    await this.page.once('dialog', dialog => dialog.accept());
-    await this.page.getByRole('link', { name: 'Add to cart' }).click();
+  async openProduct(productName) {
+    await this.product(productName).locator('.hrefch').click();
+  }
+
+  async addCurrentProductToCart() {
+    await this.page.locator('a').filter({ hasText: 'Add to cart' }).click();
   }
 
   async openCart() {
     await this.cartLink.click();
   }
 
-  async placeOrder(customer) {
+  async placeOrder(order) {
     await this.placeOrderButton.click();
-    await this.nameInput.fill(customer.name);
-    await this.countryInput.fill(customer.country);
-    await this.cityInput.fill(customer.city);
-    await this.cardInput.fill(customer.card);
-    await this.monthInput.fill(customer.month);
-    await this.yearInput.fill(customer.year);
+    await this.nameInput.fill(order.name);
+    await this.countryInput.fill(order.country);
+    await this.cityInput.fill(order.city);
+    await this.cardInput.fill(order.card);
+    await this.monthInput.fill(order.month);
+    await this.yearInput.fill(order.year);
     await this.purchaseButton.click();
+  }
+
+  async signUp(username, password) {
+    await this.signupLink.click();
+    await this.signupUsernameInput.fill(username);
+    await this.signupPasswordInput.fill(password);
+    await this.signupButton.click();
+  }
+
+  async login(username, password) {
+    await this.loginLink.click();
+    await this.loginUsernameInput.fill(username);
+    await this.loginPasswordInput.fill(password);
+    await this.loginButton.click();
   }
 }
 
-module.exports = { DemoBlazePage };
+module.exports = { DemoblazePage };

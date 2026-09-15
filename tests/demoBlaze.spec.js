@@ -1,50 +1,49 @@
 const { test, expect } = require('@playwright/test');
-const { DemoBlazePage } = require('../pages/DemoBlazePage');
+const { DemoblazePage } = require('../pages/DemoblazePage');
 
 const productName = 'Samsung galaxy s6';
-const customer = {
-  name: 'John Doe',
-  country: 'India',
-  city: 'Bengaluru',
-  card: '4111111111111111',
-  month: '09',
-  year: '2026',
+const testUser = {
+  username: `playwright_${Date.now()}`,
+  password: 'Password123!',
 };
 
-async function givenUserIsOnDemoBlaze(page) {
-  const demoBlazePage = new DemoBlazePage(page);
-  await demoBlazePage.open();
-  return demoBlazePage;
-}
-
-async function whenUserAddsProductToCart(demoBlazePage, product) {
-  await demoBlazePage.addProduct(product);
-  await demoBlazePage.openCart();
-}
-
-async function whenUserPlacesOrder(demoBlazePage, orderCustomer) {
-  await demoBlazePage.placeOrder(orderCustomer);
-}
-
-async function thenCartContainsProduct(demoBlazePage, product) {
-  await expect(demoBlazePage.cartRows).toContainText(product);
-}
-
-test.describe('DemoBlaze BDD purchase flow', () => {
-  let demoBlazePage;
+test.describe('Demoblaze shopping flow', () => {
+  let demoblazePage;
 
   test.beforeEach(async ({ page }) => {
-    demoBlazePage = await givenUserIsOnDemoBlaze(page);
+    demoblazePage = new DemoblazePage(page);
+    await demoblazePage.open();
   });
 
-  test('user can add a listed product and place an order', async () => {
-    await expect(demoBlazePage.product(productName)).toHaveCount(1);
+  test('user can view products, add one to cart, and place an order', async ({ page }) => {
+    await expect(demoblazePage.productCards).toHaveCount(9);
+    await demoblazePage.openProduct(productName);
 
-    await whenUserAddsProductToCart(demoBlazePage, productName);
-    await thenCartContainsProduct(demoBlazePage, productName);
+    await expect(page.locator('.name')).toHaveText(productName);
+    await demoblazePage.addCurrentProductToCart();
+    await demoblazePage.openCart();
 
-    await whenUserPlacesOrder(demoBlazePage, customer);
+    await expect(page.locator('#tbodyid .success')).toContainText(productName);
+    await demoblazePage.placeOrder({
+      name: 'John Doe',
+      country: 'India',
+      city: 'Bengaluru',
+      card: '4111111111111111',
+      month: '09',
+      year: '2026',
+    });
 
-    await expect(demoBlazePage.successMessage).toHaveText('Thank you for your purchase!');
+    await expect(page.locator('.sweet-alert h2')).toHaveText('Thank you for your purchase!');
+  });
+
+  test('new user can sign up and log in', async ({ page }) => {
+    page.once('dialog', async dialog => {
+      expect(dialog.message()).toContain('Sign up successful');
+      await dialog.accept();
+    });
+    await demoblazePage.signUp(testUser.username, testUser.password);
+
+    await demoblazePage.login(testUser.username, testUser.password);
+    await expect(demoblazePage.welcomeUser).toContainText(testUser.username);
   });
 });

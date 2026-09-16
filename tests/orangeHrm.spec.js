@@ -8,7 +8,7 @@ const adminUser = {
   password: 'admin123',
 };
 
-test.describe('OrangeHRM admin workflow', () => {
+test.describe.serial('OrangeHRM admin workflow', () => {
   let loginPage;
   let navigation;
   let pimPage;
@@ -32,11 +32,11 @@ test.describe('OrangeHRM admin workflow', () => {
     await navigation.openPim();
     await expect(pimPage.employeeListHeading).toBeVisible();
     await pimPage.addEmployee(employee.firstName, employee.lastName);
-    await expect(loginPage.page).toHaveURL(/pim\/viewPersonalDetails/);
+    await expect(loginPage.page).toHaveURL(/pim\/viewPersonalDetails/, { timeout: 20000 });
 
     await navigation.openPim();
     await pimPage.searchEmployee(`${employee.firstName} ${employee.lastName}`);
-    await expect(pimPage.employeeRow(employee.firstName)).toContainText(employee.lastName);
+    await expect(pimPage.employeeRow(employee.firstName)).toContainText(employee.lastName, { timeout: 20000 });
 
     await navigation.logout();
     await expect(loginPage.page).toHaveURL(/auth\/login/);

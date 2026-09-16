@@ -21,6 +21,7 @@ class OrangeHrmPimPage extends BasePage {
     await this.lastNameInput.fill(lastName);
     await this.employeeIdInput.fill(employeeId);
     await this.saveButton.click();
+    await this.page.waitForURL(/pim\/viewPersonalDetails/, { timeout: 20000 });
   }
 
   async searchEmployee(employeeName) {
